@@ -2,7 +2,7 @@
 
 Previsão de Sucesso de Jogos na Plataforma Steam
 
-## 1. Identificação do Grupo e Metadados
+## 1. Identificação do Grupo e Dataset
 
 ### Título do Projeto: Classificação de Sucesso de Jogos Virtuais na Steam
 
