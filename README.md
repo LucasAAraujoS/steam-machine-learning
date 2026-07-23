@@ -110,11 +110,10 @@ O **RandomForestClassifier** foi o modelo escolhido como final, por apresentar o
 
 ## 8. Divisão das Contribuições
 
-*(preencher com os nomes de cada integrante em cada etapa)*
-
+* **Etapa preparatória - Obtenção do dataset e eliminação de dados desnecessários:** [Lucas Antônio Araújo Santos]
 * **Etapa 1 — Análise Exploratória e Definição do Alvo:** [João Pedro Costa Cruz]
 * **Etapa 2 — Pré-processamento e Separação dos Dados:** [Lucas Antônio Araújo Santos]
-* **Etapa 3 — Modelagem e Validação:** [Jõa Vitor Souza Tavares]
+* **Etapa 3 — Modelagem e Validação:** [Jõao Vitor Souza Tavares]
 * **Etapa 4 — Avaliação e Discussão Crítica:** [João Vitor Souza Tavares]
 * **Etapa 5 — Vídeo e Ajustes Finais no GitHub:** [Todos contribuiram]
 
