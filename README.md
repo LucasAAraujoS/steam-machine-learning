@@ -74,3 +74,55 @@ Os atributos preditivos são as variáveis que os modelos de classificação uti
 * Categories (Categórico/Multi-valor): Recursos técnicos do jogo (ex: Single-player, Multi-player, Coop, Compatibilidade com Controle, Steam Cloud).
 
 * Genres (Categórico/Multi-valor): Gêneros que caracterizam a jogabilidade (ex: Action, Adventure, Indie, RPG, Strategy).
+
+## 4. Organização dos Arquivos
+
+* `README.md`: este arquivo, com a documentação completa do projeto.
+* `steam_machine_learning.ipynb`: notebook com todo o desenvolvimento — análise exploratória, pré-processamento, modelagem, avaliação e discussão crítica.
+* Os dados são carregados diretamente de uma URL pública dentro do próprio notebook, sem necessidade de upload manual de arquivos.
+
+## 5. Instruções de Execução no Google Colab
+
+1. Abra o arquivo `steam_machine_learning.ipynb` no Google Colab (pelo GitHub: *File > Open notebook > GitHub*, colando a URL do repositório, ou arrastando o link direto do arquivo).
+2. Vá em **Ambiente de execução > Executar tudo** (*Runtime > Run all*).
+3. O notebook carrega o dataset automaticamente a partir da URL pública configurada na primeira célula de código — não é necessário fazer upload de nenhum arquivo manualmente.
+4. Todas as bibliotecas utilizadas (`pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`) já vêm pré-instaladas no ambiente padrão do Colab.
+
+## 6. Modelos Utilizados
+
+Por se tratar de uma tarefa de classificação, foram utilizados, no mínimo, os modelos exigidos pelo enunciado:
+
+* **Baseline** — `DummyClassifier` (estratégia `most_frequent`), usado como piso de comparação: sempre prevê a classe majoritária ("Não Sucesso").
+* **SGDClassifier** — otimizado via `GridSearchCV` (validação cruzada com `cv=5`, métrica de otimização `f1_macro`), explorando combinações de `loss`, `penalty` e `alpha`.
+* **RandomForestClassifier** — também otimizado via `GridSearchCV` (`cv=5`, `f1_macro`), explorando `n_estimators`, `max_depth` e `min_samples_split`.
+
+A métrica `f1_macro` foi escolhida para guiar a otimização por conta do forte desbalanceamento de classes do dataset (~90% "Não Sucesso" vs. ~10% "Sucesso").
+
+## 7. Principais Resultados
+
+| Modelo | F1-Score (classe Sucesso) | Observações |
+|---|---|---|
+| Baseline (Dummy) | 0,00 | Nunca prevê a classe "Sucesso" |
+| SGDClassifier | 0,31 | Melhor que o baseline, mas com recall limitado |
+| **RandomForestClassifier** | **0,48** | Melhor modelo geral; precisão de 71% |
+
+O **RandomForestClassifier** foi o modelo escolhido como final, por apresentar o melhor F1-Score para a classe minoritária e por lidar melhor com relações não-lineares entre os atributos. Ainda assim, todos os modelos apresentam recall limitado para a classe "Sucesso" (mais falsos negativos do que seria ideal), refletindo a dificuldade imposta pelo desbalanceamento do dataset. A discussão crítica completa, com a matriz de confusão e as limitações identificadas, está no notebook.
+
+## 8. Divisão das Contribuições
+
+*(preencher com os nomes de cada integrante em cada etapa)*
+
+* **Etapa 1 — Análise Exploratória e Definição do Alvo:** [João Pedro Costa Cruz]
+* **Etapa 2 — Pré-processamento e Separação dos Dados:** [Lucas Antônio Araújo Santos]
+* **Etapa 3 — Modelagem e Validação:** [Jõa Vitor Souza Tavares]
+* **Etapa 4 — Avaliação e Discussão Crítica:** [João Vitor Souza Tavares]
+* **Etapa 5 — Vídeo e Ajustes Finais no GitHub:** [Todos contribuiram]
+
+## 9. Vídeo
+
+Link do vídeo de apresentação: [inserir link aqui]
+
+## 10. Declaração de Uso de Ferramentas de Inteligência Artificial
+
+* **Ferramenta utilizada:** Claude (Anthropic), via claude.ai.
+* **Finalidade:** apoio na estruturação do código de em caso de dúvida e documentação/interpretação dos resultados no notebook;
