@@ -1,7 +1,7 @@
 # O dataset original possui informações desnecessárias para o objetivo do projeto, como "About the game" e "Reviews". Manter
 # estas colunas tornaria o aprendizado do nosso modelo mais difícil, uma vez que seria necessário processar uma carga
-# imensa de dados, que nem sequer auxiliariam na predição do modelo. Por isso, foi utilizado este script, que filtra as colunas a serem
-# utilizadas e cria um novo arquivo .csv apenas com estas colunas.
+# imensa de dados, que nem sequer auxiliariam na predição do modelo. Por isso, foi utilizado este script para gerar o "steam_games_clean.csv", 
+# que filtra as colunas a serem utilizadas e cria um novo arquivo .csv apenas com estas colunas.
 
 import pandas as pd
 
