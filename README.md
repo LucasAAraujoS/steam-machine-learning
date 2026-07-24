@@ -85,7 +85,7 @@ Em conformidade com as diretrizes do capítulo de classificação, foram utiliza
 ---
 
 ## 10. Link do Vídeo de Apresentação
-* **Vídeo:** https://youtu.be/PAIYdE4YiXc
+* **Vídeo:** https://youtu.be/BzGwXPzFOQk
 
 ---
 
