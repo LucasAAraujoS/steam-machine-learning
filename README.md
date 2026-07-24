@@ -1,127 +1,95 @@
-# Projeto Final: Aprendizado de Máquina
+# Classificação de Sucesso de Jogos Virtuais na Steam
 
-Previsão de Sucesso de Jogos na Plataforma Steam
+## 1. Título e Objetivo do Projeto
+* **Título:** Classificação de Sucesso de Jogos Virtuais na Steam
+* **Objetivo:** Prever se um jogo publicado na plataforma Steam obterá sucesso de público e engajamento mínimo antes ou logo após seu lançamento, utilizando apenas atributos intrínsecos e estruturais do produto (como preço, plataformas suportadas, gêneros, categorias, número de conquistas, ano de lançamento, publicadoras e desenvolvedoras).
 
-## 1. Identificação do Grupo e Dataset
+---
 
-### Título do Projeto: Classificação de Sucesso de Jogos Virtuais na Steam
-
-### Integrantes:
+## 2. Integrantes
 * João Pedro Costa Cruz
 * João Vitor Souza Tavares
 * Lucas Antônio Araújo Santos
 
-Fonte dos dados original: https://www.kaggle.com/datasets/fronkongames/steam-games-dataset
+---
 
-## 2. Descrição do Problema e Contextualização
+## 3. Fonte dos Dados
+**Dataset Original:** [Kaggle - Steam Games Dataset](https://www.kaggle.com/datasets/fronkongames/steam-games-dataset)
 
-A indústria de jogos eletrônicos consolidou-se como um dos setores de entretenimento mais lucrativos do mundo. No ecossistema de computadores, a plataforma Steam atua como a principal vitrine e canal de distribuição global para desenvolvedores independentes (indies) e grandes publicadoras (AAA).
+---
 
-Diante de milhares de títulos lançados anualmente, um dos maiores desafios para desenvolvedores e investidores é prever o potencial de aceitação de um jogo antes ou logo após seu lançamento. A análise preditiva baseada em atributos de mercado e estruturais do jogo ajuda a reduzir o risco financeiro e a traçar estratégias de desenvolvimento de produto mais assertivas.
+## 4. Tipo da Tarefa
+* **Tarefa:** Classificação Binária ($Y \in \{0, 1\}$)
+  * `1` = Sucesso (Taxa de Aprovação $\ge 80\%$ e $\ge 100$ avaliações no total)
+  * `0` = Não Sucesso (Caso contrário)
+* **Justificativa:** O problema foi estruturado como uma tarefa de classificação categórica e discreta para auxiliar a tomada de decisão (como publicadoras de jogos) em avaliações de risco, permitindo mapear taxas de falsos positivos e falsos negativos por meio de matrizes de confusão.
 
-Neste projeto, em vez de tratarmos o sucesso de forma puramente contínua (como faturamento bruto estimado), estabelecemos uma métrica de sucesso híbrida baseada em qualidade de recepção (crítica do público) e engajamento/visibilidade mínima (volume de reviews).
+---
 
-## 3. Definição Técnica da Tarefa de Aprendizado
+## 5. Organização dos Arquivos
+```text
+├── README.md                          # Documentação completa e instruções do projeto
+├── dataset/
+│   ├── dataset_ia.py                  # Script Python utilizado no tratamento e limpeza inicial dos dados
+│   └── steam_games_clean.csv          # Base de dados tratada e filtrada utilizada nos experimentos
+└── notebook/
+    └── steam_machine_learning.ipynb   # Notebook principal com a análise exploratória, pré-processamento e modelos
+```
+* **Carregamento de Dados:** O notebook carrega o dataset diretamente a partir de uma URL pública configurada em seu código, sem depender de upload manual de arquivos locais.
 
-### A. O Atributo-Alvo (Success)
+---
 
-O atributo-alvo, batizado como Success, é uma variável binária categórica ($Y \in \{0, 1\}$), em que:
+## 6. Instruções para Abrir e Executar no Google Colab
+1. Acesse o [Google Colab](https://colab.research.google.com/).
+2. Clique em **Arquivo > Abrir notebook > GitHub** (*File > Open notebook > GitHub*).
+3. Insira a URL do repositório no GitHub e selecione o arquivo `steam_machine_learning.ipynb`.
+4. Vá em **Ambiente de execução > Executar tudo** (*Runtime > Run all*).
+5. O notebook executará todas as células de forma automatizada, carregando o dataset via web e utilizando bibliotecas nativas do Colab (`pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`).
 
-$Y = 1$ representa um jogo de "Sucesso" (altamente aclamado pela comunidade e com relevância mínima de mercado).
+---
 
-$Y = 0$ representa um jogo de "Não Sucesso" (baixa aceitação ou volume de interação insignificante).
+## 7. Modelos Utilizados e Hiperparâmetros
+Em conformidade com as diretrizes do capítulo de classificação, foram utilizados e otimizados via `GridSearchCV` (`cv=5`, métrica de otimização `f1_macro` devido ao desbalanceamento de ~9:1) os seguintes modelos:
 
-A regra de negócio que rege a criação deste atributo-alvo combina duas variáveis fundamentais do dataset: as avaliações positivas (Positive) e as avaliações negativas (Negative).
+* **Baseline (`DummyClassifier`):** Estratégia `most_frequent` (prevê sempre a classe majoritária `0`).
+* **SGDClassifier:** Otimizado explorando combinações de `loss` (`'hinge'`, `'log_loss'`, `'modified_huber'`), `penalty` (`'l2'`, `'l1'`, `'elasticnet'`) e `alpha` (`0.0001`, `0.001`, `0.01`, `0.1`).
+* **RandomForestClassifier:** Otimizado explorando combinações de `n_estimators` (`100`, `200`), `max_depth` (`10`, `20`, `None`) e `min_samples_split` (`2`, `5`).
 
-Sejam:
+---
 
-$R_{pos}$ o número de avaliações positivas do jogo.
+## 8. Principais Resultados
 
-$R_{neg}$ o número de avaliações negativas do jogo.
+### Desempenho no Conjunto de Teste (25.171 jogos)
+| Modelo | Acurácia | F1-Score (Classe 0 - Não Sucesso) | F1-Score (Classe 1 - Sucesso) | F1-Macro | Modelo Escolhido |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Baseline (Dummy)** | 89,56% | 0,94 | 0,00 | 0,47 | Não |
+| **SGDClassifier** | ~89,0% | ~0,94 | 0,31 | ~0,63 | Não |
+| **RandomForestClassifier** | **92,1%** | **0,96** | **0,48** | **0,72** | **Sim (Final)** |
 
-$R_{total} = R_{pos} + R_{neg}$ o volume total de avaliações obtidas.
+### Justificativa da Escolha e Resumo da Avaliação
+* **Modelo Escolhido:** `RandomForestClassifier`.
+* **Desempenho:** Apresentou o melhor F1-Score (0,48) para a classe minoritária ("Sucesso") e uma **Precisão de 71%**.
+* **Pontos Fortes:** Demonstrou capacidade superior para modelar relações não-lineares complexas entre os 158 atributos preditivos.
+* **Erros e Limitações:** Apresenta um volume considerável de falsos negativos (recall limitado na classe "Sucesso"), reflexo direto do forte desbalanceamento de classes do dataset original (~89,56% Não Sucesso vs ~10,44% Sucesso).
 
-$A = \frac{R_{pos}}{R_{total}}$ a taxa de aprovação da comunidade ($A \in [0, 1]$).
+---
 
-Matematicamente, a função que mapeia o sucesso do jogo $i$ é definida por:
+## 9. Divisão das Contribuições
+* **Etapa preparatória (Obtenção do dataset e eliminação de dados desnecessários):** Lucas Antônio Araújo Santos
+* **Etapa 1 (Análise Exploratória e Definição do Alvo):** João Pedro Costa Cruz
+* **Etapa 2 (Pré-processamento e Separação dos Dados):** Lucas Antônio Araújo Santos
+* **Etapa 3 (Modelagem e Validação):** João Vitor Souza Tavares
+* **Etapa 4 (Avaliação e Discussão Crítica):** João Vitor Souza Tavares
+* **Etapa 5 (Vídeo e Ajustes Finais no GitHub):** Todos contribuíram.
 
-$$Success_i = \begin{cases} 1, & \text{se } A_i \ge 0.80 \quad \text{e} \quad R_{total, i} \ge 100 \\\ 0, & \text{caso contrário} \end{cases}$$
+---
 
-Justificativa dos Limiares:
+## 10. Link do Vídeo de Apresentação
+* **Vídeo:** https://youtu.be/PAIYdE4YiXc
 
-Taxa de Aprovação ($\ge 80\%$): Equivalente à classificação oficial "Muito Positivo" ou "Extremamente Positivo" na plataforma Steam, garantindo que o título de "Sucesso" seja reservado para jogos de excelente qualidade percebida.
+---
 
-Volume Mínimo ($\ge 100$ avaliações): Funciona como um filtro de relevância e significância estatística. Evita o viés de falsos positivos, como jogos recém-lançados que possuem pouquíssimas avaliações (ex: 5 avaliações, todas positivas, o que resultaria em $100\%$ de aprovação sem relevância estatística ou de mercado).
-
-### B. Justificativa do Tipo de Tarefa: Classificação
-
-O problema foi estruturado como uma tarefa de Classificação porque o nosso objetivo final é mapear os dados de entrada para uma decisão categórica e discreta (Sucesso vs. Não Sucesso). Isso permite que tomadores de decisão (como publicadoras de jogos) façam avaliações qualitativas e utilizem métricas de diagnóstico de erro cruciais para minimizar os riscos de investimento.
-
-### C. Atributos Preditivos
-
-Os atributos preditivos são as variáveis que os modelos de classificação utilizarão para aprender o comportamento de um jogo de sucesso. Foram selecionados atributos puramente intrínsecos e estruturais, evitando dados coletados após a consolidação do sucesso (evitando o vazamento de dados). São eles:
-
-* Price (Numérico Contínuo): O valor monetário do jogo em seu lançamento. Ajuda a identificar a sensibilidade ao preço.
-
-* Release date (Temporal): Data de publicação. Permite extrair sazonalidades (mês de lançamento, ano) e entender o impacto do tempo no mercado.
-
-* Achievements (Numérico Inteiro): Quantidade de conquistas desbloqueáveis que o jogo oferece.
-
-* Windows, Mac, Linux (Booleanos): Indicadores de compatibilidade com os diferentes sistemas operacionais do mercado (portabilidade).
-
-* Developers e Publishers (Categóricos): Desenvolvedoras e publicadoras responsáveis.
-
-* Categories (Categórico/Multi-valor): Recursos técnicos do jogo (ex: Single-player, Multi-player, Coop, Compatibilidade com Controle, Steam Cloud).
-
-* Genres (Categórico/Multi-valor): Gêneros que caracterizam a jogabilidade (ex: Action, Adventure, Indie, RPG, Strategy).
-
-## 4. Organização dos Arquivos
-
-* `README.md`: este arquivo, com a documentação completa do projeto.
-* `steam_machine_learning.ipynb`: notebook com todo o desenvolvimento — análise exploratória, pré-processamento, modelagem, avaliação e discussão crítica.
-* Os dados são carregados diretamente de uma URL pública dentro do próprio notebook, sem necessidade de upload manual de arquivos.
-
-## 5. Instruções de Execução no Google Colab
-
-1. Abra o arquivo `steam_machine_learning.ipynb` no Google Colab (pelo GitHub: *File > Open notebook > GitHub*, colando a URL do repositório, ou arrastando o link direto do arquivo).
-2. Vá em **Ambiente de execução > Executar tudo** (*Runtime > Run all*).
-3. O notebook carrega o dataset automaticamente a partir da URL pública configurada na primeira célula de código — não é necessário fazer upload de nenhum arquivo manualmente.
-4. Todas as bibliotecas utilizadas (`pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`) já vêm pré-instaladas no ambiente padrão do Colab.
-
-## 6. Modelos Utilizados
-
-Por se tratar de uma tarefa de classificação, foram utilizados, no mínimo, os modelos exigidos pelo enunciado:
-
-* **Baseline** — `DummyClassifier` (estratégia `most_frequent`), usado como piso de comparação: sempre prevê a classe majoritária ("Não Sucesso").
-* **SGDClassifier** — otimizado via `GridSearchCV` (validação cruzada com `cv=5`, métrica de otimização `f1_macro`), explorando combinações de `loss`, `penalty` e `alpha`.
-* **RandomForestClassifier** — também otimizado via `GridSearchCV` (`cv=5`, `f1_macro`), explorando `n_estimators`, `max_depth` e `min_samples_split`.
-
-A métrica `f1_macro` foi escolhida para guiar a otimização por conta do forte desbalanceamento de classes do dataset (~90% "Não Sucesso" vs. ~10% "Sucesso").
-
-## 7. Principais Resultados
-
-| Modelo | F1-Score (classe Sucesso) | Observações |
-|---|---|---|
-| Baseline (Dummy) | 0,00 | Nunca prevê a classe "Sucesso" |
-| SGDClassifier | 0,31 | Melhor que o baseline, mas com recall limitado |
-| **RandomForestClassifier** | **0,48** | Melhor modelo geral; precisão de 71% |
-
-O **RandomForestClassifier** foi o modelo escolhido como final, por apresentar o melhor F1-Score para a classe minoritária e por lidar melhor com relações não-lineares entre os atributos. Ainda assim, todos os modelos apresentam recall limitado para a classe "Sucesso" (mais falsos negativos do que seria ideal), refletindo a dificuldade imposta pelo desbalanceamento do dataset. A discussão crítica completa, com a matriz de confusão e as limitações identificadas, está no notebook.
-
-## 8. Divisão das Contribuições
-
-* **Etapa preparatória - Obtenção do dataset e eliminação de dados desnecessários:** [Lucas Antônio Araújo Santos]
-* **Etapa 1 — Análise Exploratória e Definição do Alvo:** [João Pedro Costa Cruz]
-* **Etapa 2 — Pré-processamento e Separação dos Dados:** [Lucas Antônio Araújo Santos]
-* **Etapa 3 — Modelagem e Validação:** [Jõao Vitor Souza Tavares]
-* **Etapa 4 — Avaliação e Discussão Crítica:** [João Vitor Souza Tavares]
-* **Etapa 5 — Vídeo e Ajustes Finais no GitHub:** [Todos contribuiram]
-
-## 9. Vídeo
-
-Link do vídeo de apresentação: [inserir link aqui]
-
-## 10. Declaração de Uso de Ferramentas de Inteligência Artificial
-
-* **Ferramenta utilizada:** Claude (Anthropic), via claude.ai.
-* **Finalidade:** apoio na estruturação do código de em caso de dúvida e documentação/interpretação dos resultados no notebook;
+## 11. Declaração de Uso de Ferramentas de Inteligência Artificial
+* **Ferramenta utilizada:** Claude (Anthropic) / ChatGPT (OpenAI).
+* **Finalidade:** Apoio na estruturação sintática de trechos de código em Python/scikit-learn, formatação da documentação em Markdown e auxílio na interpretação das métricas.
+* **Forma de Verificação:** Todo o código gerado, lógica de negócio, transformações do pipeline e análises críticas dos resultados foram testados, verificados e revisados manualmente pelos integrantes do grupo.
